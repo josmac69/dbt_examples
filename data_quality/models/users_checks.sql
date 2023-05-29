@@ -1,3 +1,3 @@
 -- users_checks model
 
-SELECT * FROM public.users
+SELECT * FROM {{ source('data_quality', 'users')}}
