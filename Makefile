@@ -3,6 +3,8 @@ modelname_check = $(if $(MODEL_NAME),,@echo "MODEL_NAME variable is not set or e
 dbtcommand_check = $(if $(DBT_COMMAND),,@echo "DBT_COMMAND variable is not set or empty"; exit 1)
 
 NETWORK_NAME = "dbt_examples"
+DBT_IMAGE="my_dbt_postgres"
+DBT_TARGET="dbt-postgres"
 
 create-env:
 	mkdir -p postgres/app
@@ -13,12 +15,15 @@ create-env:
 	chmod 777 -R secrets 2>/dev/null || true
 	docker network inspect $(NETWORK_NAME) >/dev/null 2>&1 || docker network create $(NETWORK_NAME)
 
+dbt-build:
+	docker build --tag $(DBT_IMAGE)  --target $(DBT_TARGET) ./docker
+
 dbt-init: create-env
 	docker run -it \
 	-v ${PWD}:/usr/app \
 	-v ${PWD}/secrets/.dbt:/root/.dbt \
 	-w /usr/app \
-	xemuliam/dbt:latest dbt init
+	$(DBT_IMAGE) init
 
 run-dbs: create-env
 	docker compose -f docker-compose.yaml up -d postgres
@@ -39,8 +44,8 @@ dbt: create-env clean-dbt
 	-v ${PWD}/$(DBT_PROJECT):/usr/app \
 	-v ${PWD}/secrets/.dbt:/root/.dbt \
 	-w /usr/app \
-	xemuliam/dbt \
-	dbt --no-partial-parse $(DBT_COMMAND)
+	$(DBT_IMAGE) \
+	--no-partial-parse $(DBT_COMMAND)
 #	--models $(MODEL_NAME)
 
 clean-dbt:
@@ -56,4 +61,5 @@ clean:
 	run-psql \
 	clean-dbt \
 	dbt \
-	dbt-init
+	dbt-init \
+	dbt-build

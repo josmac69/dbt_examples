@@ -1,5 +1,20 @@
 version: 2
 
+sources:
+  - name: data_quality
+    database: main
+    schema: public
+    tables:
+      - name: users
+        columns:
+          - name: username
+            tests:
+              - not_null
+          - name: email
+            tests:
+              - not_null
+              - unique
+
 models:
   - name: users_checks
     columns:

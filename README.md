@@ -1,6 +1,11 @@
 # dbt examples
 Repository shows different use cases for dbt tool
 
+## Environment
+* Originally I tried to use the image `xemuliam/dbt` but it turned out it is a few months old and contains only dbt 1.3.
+* Therefore I cloned repository https://github.com/dbt-labs/dbt-core which contains latest dbt code and also Dockerfile to build image.
+* For usage in this repository I copied their Dockerfile and used it in my main Makefile.
+*
 
 ### Notes
 
