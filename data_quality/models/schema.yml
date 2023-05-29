@@ -14,6 +14,7 @@ sources:
             tests:
               - not_null
               - unique
+              - not_empty
 
 models:
   - name: users_checks

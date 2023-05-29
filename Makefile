@@ -28,7 +28,7 @@ dbt-init: create-env
 run-dbs: create-env
 	docker compose -f docker-compose.yaml up -d postgres
 
-stop-dbs:
+stop-all: clean-dbt
 	docker compose -f docker-compose.yaml down
 
 run-psql:
@@ -57,7 +57,7 @@ clean:
 .PHONY: create-env \
 	clean \
 	run-dbs \
-	stop-dbs \
+	stop-all \
 	run-psql \
 	clean-dbt \
 	dbt \
