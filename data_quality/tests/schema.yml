@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: users
+    columns:
+      - name: username
+        tests:
+          - not_null
+      - name: email
+        tests:
+          - not_null
+          - unique

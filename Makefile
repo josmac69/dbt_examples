@@ -1,3 +1,5 @@
+NETWORK_NAME = "dbt_examples"
+
 create-env:
 	mkdir -p postgres/app
 	mkdir -p postgres/ini
@@ -5,8 +7,9 @@ create-env:
 	mkdir -p secrets/.dbt
 	chmod 777 -R postgres 2>/dev/null || true
 	chmod 777 -R secrets 2>/dev/null || true
+	docker network inspect $(NETWORK_NAME) >/dev/null 2>&1 || docker network create $(NETWORK_NAME)
 
-init-dbt: create-env
+dbt-init: create-env
 	docker run -it \
 	-v ${PWD}:/usr/app \
 	-v ${PWD}/secrets/.dbt:/root/.dbt \
@@ -22,15 +25,26 @@ stop-dbs:
 run-psql:
 	docker compose exec postgres psql -U myuser -d main
 
-run-dbt: create-env
+dbt-run: create-env
 	docker run -it \
 	--network $(NETWORK_NAME) \
 	--name dbt \
-	-v ${PWD}/pricenow_task2:/usr/app \
-	-v ${PWD}/../secrets/.dbt:/root/.dbt \
+	-v ${PWD}/$(MODEL_NAME):/usr/app \
+	-v ${PWD}/secrets/.dbt:/root/.dbt \
 	-w /usr/app \
 	xemuliam/dbt \
 	dbt --no-partial-parse run \
+	--models $(MODEL_NAME)
+
+dbt-test: create-env
+	docker run -it \
+	--network $(NETWORK_NAME) \
+	--name dbt \
+	-v ${PWD}/$(MODEL_NAME):/usr/app \
+	-v ${PWD}/secrets/.dbt:/root/.dbt \
+	-w /usr/app \
+	xemuliam/dbt \
+	dbt --no-partial-parse test \
 	--models $(MODEL_NAME)
 
 clean-dbt:
@@ -44,6 +58,7 @@ clean:
 	run-dbs \
 	stop-dbs \
 	run-psql \
-	run-dbt \
 	clean-dbt \
-	init-dbt
+	dbt-init \
+	dbt-run \
+	dbt-test

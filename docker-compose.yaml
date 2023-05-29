@@ -1,8 +1,8 @@
 version: '3.8'
 
 networks:
-  data_challenge_pn:
-    name: data_challenge_pn
+  dbt_examples:
+    name: dbt_examples
     driver: bridge
 
 services:
@@ -10,7 +10,7 @@ services:
     image: postgres:latest
     container_name: postgres
     networks:
-      - data_challenge_pn
+      - dbt_examples
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
