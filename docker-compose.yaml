@@ -1,0 +1,23 @@
+version: '3.8'
+
+networks:
+  data_challenge_pn:
+    name: data_challenge_pn
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    networks:
+      - data_challenge_pn
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: main
+    volumes:
+      - ./postgres/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres/app:/app
+      - ./postgres/output:/output
+    ports:
+      - "5432:5432"
