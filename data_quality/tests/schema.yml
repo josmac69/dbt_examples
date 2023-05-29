@@ -1,12 +1,14 @@
 version: 2
 
 models:
-  - name: users
+  - name: users_checks
     columns:
       - name: username
+        description: "The username of the user"
         tests:
           - not_null
       - name: email
+        description: "The email of the user"
         tests:
           - not_null
           - unique

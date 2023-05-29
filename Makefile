@@ -1,4 +1,6 @@
+dbtproject_check = $(if $(DBT_PROJECT),,@echo "DBT_PROJECT variable is not set or empty"; exit 1)
 modelname_check = $(if $(MODEL_NAME),,@echo "MODEL_NAME variable is not set or empty"; exit 1)
+dbtcommand_check = $(if $(DBT_COMMAND),,@echo "DBT_COMMAND variable is not set or empty"; exit 1)
 
 NETWORK_NAME = "dbt_examples"
 
@@ -27,29 +29,19 @@ stop-dbs:
 run-psql:
 	docker compose exec postgres psql -U myuser -d main
 
-dbt-run: create-env clean-dbt
-	$(call modelname_check)
+dbt: create-env clean-dbt
+	$(call dbtproject_check)
+	$(call dbtcommand_check)
+#	$(call modelname_check)
 	docker run -it \
 	--network $(NETWORK_NAME) \
 	--name dbt \
-	-v ${PWD}/$(MODEL_NAME):/usr/app \
+	-v ${PWD}/$(DBT_PROJECT):/usr/app \
 	-v ${PWD}/secrets/.dbt:/root/.dbt \
 	-w /usr/app \
 	xemuliam/dbt \
-	dbt --no-partial-parse run \
-	--models $(MODEL_NAME)
-
-dbt-test: create-env clean-dbt
-	$(call modelname_check)
-	docker run -it \
-	--network $(NETWORK_NAME) \
-	--name dbt \
-	-v ${PWD}/$(MODEL_NAME):/usr/app \
-	-v ${PWD}/secrets/.dbt:/root/.dbt \
-	-w /usr/app \
-	xemuliam/dbt \
-	dbt --no-partial-parse test \
-	--models $(MODEL_NAME)
+	dbt --no-partial-parse $(DBT_COMMAND)
+#	--models $(MODEL_NAME)
 
 clean-dbt:
 	docker rm -f dbt
@@ -63,6 +55,5 @@ clean:
 	stop-dbs \
 	run-psql \
 	clean-dbt \
-	dbt-init \
-	dbt-run \
-	dbt-test
+	dbt \
+	dbt-init
