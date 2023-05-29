@@ -1,3 +1,5 @@
+modelname_check = $(if $(MODEL_NAME),,@echo "MODEL_NAME variable is not set or empty"; exit 1)
+
 NETWORK_NAME = "dbt_examples"
 
 create-env:
@@ -25,7 +27,8 @@ stop-dbs:
 run-psql:
 	docker compose exec postgres psql -U myuser -d main
 
-dbt-run: create-env
+dbt-run: create-env clean-dbt
+	$(call modelname_check)
 	docker run -it \
 	--network $(NETWORK_NAME) \
 	--name dbt \
@@ -36,7 +39,8 @@ dbt-run: create-env
 	dbt --no-partial-parse run \
 	--models $(MODEL_NAME)
 
-dbt-test: create-env
+dbt-test: create-env clean-dbt
+	$(call modelname_check)
 	docker run -it \
 	--network $(NETWORK_NAME) \
 	--name dbt \
