@@ -72,3 +72,12 @@ Available sub-commands:
     run-operation       Run the named macro with any supplied arguments.
 
 Specify one of these sub-commands and you can find more help from there.
+
+## Resources
+
+### dbt courses:
+* [Advanced Materializations](https://courses.getdbt.com/courses/take/advanced-materializations)
+
+### articles
+* [Building an effective model for Product Lifecycle data with dbt](https://medium.com/@george.apps_98339/building-an-effective-model-for-product-lifecycle-data-with-dbt-7b959c4c8836)
+*
